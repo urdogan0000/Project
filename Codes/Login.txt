@@ -1,0 +1,62 @@
+clickLogin() {
+    //let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/; reg.test(email) === false  7emailin nasıl olcağı
+    const {email, password} = this.props;
+    if (email == '' || password == '') {
+      Alert.alert('Lütfen mail veya şifrenizi giriniz');
+    } else {
+      if (false) {
+        Alert.alert('Lütfen geçerli bir email giriniz..');
+      } else {
+        //else kısmında apiden gelen tokeni kaydediyor ve login bilgilerini hafızaya alıyor
+        api.UserLogin(email, password, Response => {
+          if (Response.data.Message == 'İşlem Başarılı Şekilde Gerçekleşti') {
+            const token = Response.data.Data.Token;
+
+            this.props.getToken({token});
+
+            const dataLogin = Response.data.Data;
+            this.props.changeData(dataLogin);
+            console.log(dataLogin);
+
+            Actions.Home();
+          } else {
+            alert(Response.data.Message);
+          }
+        });
+      }
+    }
+  }
+
+  render() {
+    const {inputStyle} = styles;
+    return (
+      <Card>
+        <CardSection>
+          <TextInput
+            placeholder="E-mail"
+            style={inputStyle}
+            value={this.props.email}
+            onChangeText={email => this.props.changeEmail(email)}
+          />
+        </CardSection>
+
+        <CardSection>
+          <TextInput
+            secureTextEntry
+            placeholder="Şifre"
+            style={inputStyle}
+            value={this.props.password}
+            onChangeText={password => this.props.changePassword(password)}
+          />
+        </CardSection>
+
+        <CardSection>
+          <Button onPress={this.clickLogin.bind(this)}> Giriş</Button>
+        </CardSection>
+        <CardSection>
+          <Button onPress={Actions.SignUp}> Kayıt ol</Button>
+        </CardSection>
+      </Card>
+    );
+  }
+}

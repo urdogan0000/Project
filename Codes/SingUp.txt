@@ -1,0 +1,94 @@
+register() {//bu method kayıt için gerekli kontorulu yapıyor ve sisteme kaydediyor
+    let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    if (reg.test(this.state.eMail) === false) {
+      Alert.alert('Lütfen geçerli bir email giriniz..');
+    } else {
+      api.UserRegister(this.state, Response => {
+        if (Response.data.Message == 'İşlem Başarılı Şekilde Gerçekleşti') {
+          Alert.alert(
+            'Tebrikler',
+            Response.data.Message,
+            [{text: 'OK', onPress: () => Actions.Login()}],
+            {cancelable: false},
+          );
+        } else {
+          Alert.alert(
+            'Bir şeyler ters gitti',
+            Response.data.Message,
+            [{text: 'OK'}],
+            {cancelable: false},
+          );
+        }
+      });
+    }
+  }
+
+  /*  on press eventinde kayıt yapmak için  
+api.UserRegister(this.DataP, (response) => {
+  alert(response.data.Message);   
+   */
+
+  render() {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.welcome}>SignUp</Text>
+
+        <TextInput
+          placeholder="NameSurname"
+          style={styles.input}
+          value={this.state.NameSurname}
+          onChangeText={NameSurname => this.setState({NameSurname})}
+        />
+
+        <TextInput
+          placeholder="email"
+          style={styles.input}
+          value={this.state.eMail}
+          onChangeText={eMail => this.setState({eMail})}
+        />
+        <TextInput
+          secureTextEntry
+          placeholder="Şifre"
+          style={styles.input}
+          value={this.state.password}
+          onChangeText={password => this.setState({password})}
+        />
+
+        <View style={styles.btnContainer}>
+          <TouchableOpacity
+            style={styles.userBtn}
+            onPress={this.register.bind(this)}>
+            <Text style={styles.btnText}>Register</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  }
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+
+    alignItems: 'center',
+    backgroundColor: '#1e90ff',
+  },
+  input: {
+    width: '90%',
+    backgroundColor: '#fff',
+    marginTop: 20,
+  },
+  welcome: {
+    fontSize: 30,
+    textAlign: 'center',
+    marginLeft: 10,
+    color: '#fff',
+  },
+  userBtn: {
+    backgroundColor: '#ffd700',
+    marginTop: 10,
+    padding: 10,
+    width: '45%',
+    borderRadius: 20,
+  },
+});

@@ -1,0 +1,66 @@
+componentDidMount() {
+    this.getDataHome();
+    this.getUserProfile();
+  }
+  getUserProfile() {
+    api.UserProfile(this.props.dataLogin.Id, this.props.token, Response => {
+      const dataProfile = Response.data.Data.UserP;
+
+      this.props.changeProfile(dataProfile);
+    });
+  }
+
+  getDataHome() {
+    api.BidBids(this.state.dataP, this.props.token, Response => {
+      //burada apiden bidleri çekme işlemi gerçekleşiyor
+      this.setState({dataT: this.state.dataT.concat(Response.data.Data)});
+    });
+  }
+
+  renderingDataHome() {
+    //bu metodda datahome attığımız bidlerdeki verilerin hepisini detay kompenenti aracılığıyla gösteriyor
+    const result = Object.entries(this.state.dataT);
+    return result.map(value => <Detay key={value[0]} data={value[1]}></Detay>);
+  }
+  isCloseToBottom = ({layoutMeasurement, contentOffset, contentSize}) => {
+    return layoutMeasurement.height + contentOffset.y >= contentSize.height - 1;
+  };
+
+  //{dataP:{ Page:this.state.dataP.Page + 1}}
+
+  handleLoadMore = () => {
+    this.setState(
+      {dataP: {...this.state.dataP, Page: this.state.dataP.Page + 1}},
+      this.getDataHome,
+    );
+  };
+
+  renderFooter = () => {
+    return (
+      <View style={styles.subcontainerStyle}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  };
+  render() {
+    const {containerStyle, subcontainerStyle} = styles;
+
+    return (
+      <>
+        <ScrollView
+          onMomentumScrollEnd={({nativeEvent}) => {
+            if (this.isCloseToBottom(nativeEvent)) {
+              this.renderFooter();
+              this.handleLoadMore();
+            }
+          }}>
+          {this.renderingDataHome()}
+        </ScrollView>
+      </>
+    );
+  }
+}
+const mapStateToProps = ({loginactionreducers}) => {
+  const {token, dataLogin} = loginactionreducers;
+  return {token, dataLogin};
+};
